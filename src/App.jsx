@@ -38,12 +38,23 @@ export default function App() {
     return annualBenefit > 0 ? totalCost / annualBenefit : Infinity;
   }, [totalCost, annualBenefit]);
 
+  // Payback color + band thresholds:
+  // <= 10 green; 10.1–15 yellow; 15.1+ red
   const paybackColor =
     paybackYears <= 10
       ? "#16a34a"
       : paybackYears <= 15
       ? "#f59e0b"
       : "#dc2626";
+
+  const paybackBand =
+    !Number.isFinite(paybackYears)
+      ? { text: "—", bg: "#e5e7eb", fg: "#111827" }
+      : paybackYears <= 10
+      ? { text: "GREEN (≤ 10.0 yrs)", bg: "#16a34a", fg: "#ffffff" }
+      : paybackYears <= 15
+      ? { text: "YELLOW (10.1–15.0 yrs)", bg: "#f59e0b", fg: "#111827" }
+      : { text: "RED (≥ 15.1 yrs)", bg: "#dc2626", fg: "#ffffff" };
 
   const npv = useMemo(() => {
     let v = -totalCost;
@@ -103,6 +114,7 @@ export default function App() {
               gap: 50,
             }}
           >
+            {/* Inputs */}
             <div>
               <h3>Inputs</h3>
 
@@ -166,30 +178,59 @@ export default function App() {
               />
             </div>
 
+            {/* Results */}
             <div>
               <h3>Results</h3>
 
               <div style={{ marginBottom: 18 }}>
-                <div style={{ fontSize: 44, fontWeight: 800 }}>
-                  {Number.isFinite(paybackYears)
-                    ? `${paybackYears.toFixed(2)} years`
-                    : "—"}
-                </div>
                 <div style={{ fontWeight: 700, color: paybackColor }}>
                   Simple Payback
+                </div>
+
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "baseline",
+                    gap: 12,
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <div style={{ fontSize: 44, fontWeight: 800 }}>
+                    {Number.isFinite(paybackYears)
+                      ? `${paybackYears.toFixed(2)} years`
+                      : "—"}
+                  </div>
+
+                  <span
+                    style={{
+                      fontSize: 12,
+                      fontWeight: 800,
+                      padding: "6px 10px",
+                      borderRadius: 999,
+                      background: paybackBand.bg,
+                      color: paybackBand.fg,
+                      lineHeight: 1,
+                    }}
+                    title="≤ 10.0 GREEN; 10.1–15.0 YELLOW; ≥ 15.1 RED"
+                  >
+                    {paybackBand.text}
+                  </span>
                 </div>
               </div>
 
               <div style={{ marginBottom: 8 }}>
                 <strong>Total Cost:</strong> ${money(totalCost)}
               </div>
+
               <div style={{ marginBottom: 8 }}>
                 <strong>Annual Benefit:</strong> ${money(annualBenefit)}
               </div>
+
               <div style={{ marginBottom: 8 }}>
                 <strong>Implied Yield Bump:</strong>{" "}
                 {yieldBumpBu.toFixed(2)} bu/acre
               </div>
+
               <div style={{ marginBottom: 8 }}>
                 <strong>NPV ({horizonYears} yrs):</strong> ${money(npv)}
               </div>
