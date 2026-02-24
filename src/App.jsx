@@ -38,7 +38,7 @@ export default function App() {
     return annualBenefit > 0 ? totalCost / annualBenefit : Infinity;
   }, [totalCost, annualBenefit]);
 
-  // Payback color + band thresholds:
+  // Payback thresholds:
   // <= 10 green; 10.1–15 yellow; 15.1+ red
   const paybackColor =
     paybackYears <= 10
@@ -64,6 +64,25 @@ export default function App() {
     }
     return v;
   }, [totalCost, annualBenefit, discountRate, horizonYears]);
+
+  // Sensitivity box: 5%, 10%, 15%, 20%
+  const sensitivity = useMemo(() => {
+    const lifts = [5, 10, 15, 20];
+    const r = discountRate / 100;
+
+    return lifts.map((pct) => {
+      const bumpBu = baseYield * (pct / 100);
+      const benefit = acres * bumpBu * cornPrice;
+      const payback = benefit > 0 ? totalCost / benefit : Infinity;
+
+      let v = -totalCost;
+      for (let t = 1; t <= horizonYears; t++) {
+        v += benefit / Math.pow(1 + r, t);
+      }
+
+      return { pct, bumpBu, payback, npv: v };
+    });
+  }, [acres, baseYield, cornPrice, discountRate, horizonYears, totalCost]);
 
   return (
     <div
@@ -178,7 +197,7 @@ export default function App() {
               />
             </div>
 
-            {/* Results */}
+            {/* Results + Sensitivity */}
             <div>
               <h3>Results</h3>
 
@@ -231,8 +250,62 @@ export default function App() {
                 {yieldBumpBu.toFixed(2)} bu/acre
               </div>
 
-              <div style={{ marginBottom: 8 }}>
+              <div style={{ marginBottom: 18 }}>
                 <strong>NPV ({horizonYears} yrs):</strong> ${money(npv)}
+              </div>
+
+              {/* Sensitivity box */}
+              <div style={{ marginTop: 10 }}>
+                <h3 style={{ marginBottom: 10 }}>Sensitivity (Yield Lift)</h3>
+
+                <div
+                  style={{
+                    border: "1px solid #e5e7eb",
+                    borderRadius: 12,
+                    overflow: "hidden",
+                    background: "#ffffff",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "1.2fr 1fr 1fr",
+                      fontWeight: 700,
+                      padding: 10,
+                      background: "#f9fafb",
+                      borderBottom: "1px solid #e5e7eb",
+                    }}
+                  >
+                    <div>Yield lift</div>
+                    <div>Payback</div>
+                    <div>NPV</div>
+                  </div>
+
+                  {sensitivity.map((row, idx) => (
+                    <div
+                      key={row.pct}
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "1.2fr 1fr 1fr",
+                        padding: 10,
+                        borderBottom:
+                          idx === sensitivity.length - 1
+                            ? "none"
+                            : "1px solid #f1f5f9",
+                      }}
+                    >
+                      <div>
+                        {row.pct}% ({row.bumpBu.toFixed(1)} bu)
+                      </div>
+                      <div>
+                        {Number.isFinite(row.payback)
+                          ? `${row.payback.toFixed(2)} yrs`
+                          : "—"}
+                      </div>
+                      <div>${money(row.npv)}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
