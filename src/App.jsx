@@ -107,8 +107,12 @@ export default function App() {
         <div
           style={{
             textAlign: "center",
-            fontSize: 18,
-            color: "#374151",
+            fontFamily: "Orbitron, sans-serif",
+            fontWeight: 500,
+            letterSpacing: "1.5px",
+            fontSize: 15,
+            textTransform: "uppercase",
+            color: "#1f2937",
             marginBottom: 18,
           }}
         >
