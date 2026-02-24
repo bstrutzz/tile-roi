@@ -143,7 +143,7 @@ export default function App() {
             marginBottom: 34,
           }}
         >
-          (50/50 Corn/Soy)
+          (50/50 Corn/Soybeans)
         </div>
 
         {/* Card */}
@@ -256,7 +256,32 @@ export default function App() {
                     : "—"}
                 </div>
               </div>
-
+              <a
+                href="tel:17122105183"
+                onClick={() => {
+                  if (window.gtag) {
+                    window.gtag("event", "call_click", {
+                      method: "phone",
+                    });
+                  }
+                }}
+                style={{
+                  display: "block",
+                  width: "100%",
+                  textAlign: "center",
+                  marginTop: 20,
+                  padding: "14px 24px",
+                  backgroundColor: "rgb(247, 236, 32)",
+                  color: "#000",
+                  fontWeight: 700,
+                  fontsize: 18,
+                  textDecoration: "none",
+                  borderRadius: 6,
+                  cursor: "pointer"
+                }}
+              >
+                Talk Through Your Farm's Numbers
+              </a>
               <div style={{ marginBottom: 8 }}>
                 <strong>Total Cost:</strong> ${money(totalCost)}
               </div>
