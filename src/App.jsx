@@ -95,7 +95,7 @@ export default function App() {
     >
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         {/* Logo */}
-        <div style={{ textAlign: "center", marginBottom: 22 }}>
+        <div style={{ textAlign: "center", marginBottom: 8 }}>
           <img
             src="/sfd-logo.png"
             alt="Strutzenberg Logo"
@@ -109,11 +109,12 @@ export default function App() {
             textAlign: "center",
             fontFamily: "Orbitron, sans-serif",
             fontWeight: 500,
-            letterSpacing: "1.5px",
+            letterSpacing: "1.0px",
             fontSize: 15,
             textTransform: "uppercase",
             color: "#1f2937",
-            marginBottom: 18,
+            marginTop: 4,
+            marginBottom: 12,
           }}
         >
           Your land. Your legacy. Our expertise.
