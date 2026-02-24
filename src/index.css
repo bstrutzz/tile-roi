@@ -96,3 +96,17 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+/* Responsive layout grid */
+.layout-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 50px;
+}
+
+@media (max-width: 900px) {
+  .layout-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}

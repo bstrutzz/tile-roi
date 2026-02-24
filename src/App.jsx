@@ -153,12 +153,7 @@ export default function App() {
             boxShadow: "0 10px 25px rgba(0,0,0,0.08)",
           }}
         >
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: 50,
-            }}
+          <div className="layout-grid">
           >
             {/* Inputs */}
             <div>
