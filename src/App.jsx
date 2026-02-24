@@ -57,6 +57,8 @@ export default function App() {
     return annualBenefit > 0 ? totalCost / annualBenefit : Infinity;
   }, [totalCost, annualBenefit]);
 
+  // Payback thresholds:
+  // <= 10 green; 10.1–15 yellow; 15.1+ red
   const paybackColor =
     paybackYears <= 10
       ? "#16a34a"
@@ -64,6 +66,7 @@ export default function App() {
         ? "#f59e0b"
         : "#dc2626";
 
+  // Sensitivity (Yield Lift) - applies SAME lift % to both crops
   const sensitivity = useMemo(() => {
     const lifts = [5, 10, 15, 20];
 
@@ -77,13 +80,7 @@ export default function App() {
 
       const payback = benefit > 0 ? totalCost / benefit : Infinity;
 
-      return {
-        pct,
-        benefit,
-        payback,
-        cornBump,
-        soyBump,
-      };
+      return { pct, benefit, payback, cornBump, soyBump };
     });
   }, [acres, cornYield, soyYield, cornPrice, soyPrice, totalCost]);
 
@@ -97,6 +94,7 @@ export default function App() {
       }}
     >
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+        {/* Logo */}
         <div style={{ textAlign: "center", marginBottom: 22 }}>
           <img
             src="/sfd-logo.png"
@@ -105,6 +103,7 @@ export default function App() {
           />
         </div>
 
+        {/* Tagline under logo */}
         <div
           style={{
             textAlign: "center",
@@ -116,6 +115,7 @@ export default function App() {
           Your land. Your legacy. Our expertise.
         </div>
 
+        {/* Title */}
         <h1
           style={{
             textAlign: "center",
@@ -126,6 +126,7 @@ export default function App() {
           Tile Drainage ROI Calculator
         </h1>
 
+        {/* Subtitle */}
         <div
           style={{
             textAlign: "center",
@@ -138,6 +139,7 @@ export default function App() {
           (50/50 Corn/Soy)
         </div>
 
+        {/* Card */}
         <div
           style={{
             backgroundColor: "white",
@@ -180,12 +182,13 @@ export default function App() {
               <label>Corn Price ($/bu)</label>
               <input
                 type="number"
+                step="0.01"
                 value={cornPrice}
                 onChange={(e) => setCornPrice(+e.target.value)}
                 style={{ width: "100%", marginBottom: 12, padding: 8 }}
               />
 
-              <label>Corn Base Yield</label>
+              <label>Corn Base Yield (bu/acre)</label>
               <input
                 type="number"
                 value={cornYield}
@@ -196,6 +199,7 @@ export default function App() {
               <label>Corn Yield Bump (%)</label>
               <input
                 type="number"
+                step="0.1"
                 value={cornYieldBumpPct}
                 onChange={(e) => setCornYieldBumpPct(+e.target.value)}
                 style={{ width: "100%", marginBottom: 18, padding: 8 }}
@@ -208,12 +212,13 @@ export default function App() {
               <label>Soy Price ($/bu)</label>
               <input
                 type="number"
+                step="0.01"
                 value={soyPrice}
                 onChange={(e) => setSoyPrice(+e.target.value)}
                 style={{ width: "100%", marginBottom: 12, padding: 8 }}
               />
 
-              <label>Soy Base Yield</label>
+              <label>Soy Base Yield (bu/acre)</label>
               <input
                 type="number"
                 value={soyYield}
@@ -224,6 +229,7 @@ export default function App() {
               <label>Soy Yield Bump (%)</label>
               <input
                 type="number"
+                step="0.1"
                 value={soyYieldBumpPct}
                 onChange={(e) => setSoyYieldBumpPct(+e.target.value)}
                 style={{ width: "100%", padding: 8 }}
@@ -255,8 +261,7 @@ export default function App() {
               </div>
 
               <div style={{ marginBottom: 8 }}>
-                <strong>Annual Benefit (50/50):</strong>{" "}
-                ${money(annualBenefit)}
+                <strong>Annual Benefit (50/50):</strong> ${money(annualBenefit)}
               </div>
 
               <div style={{ marginBottom: 14 }}>
@@ -265,15 +270,73 @@ export default function App() {
               </div>
 
               <div style={{ marginBottom: 6 }}>
-                <strong>Corn implied bump:</strong>{" "}
-                {cornBumpBu.toFixed(2)} bu/ac
+                <strong>Corn implied bump:</strong> {cornBumpBu.toFixed(2)} bu/ac
               </div>
 
               <div style={{ marginBottom: 18 }}>
-                <strong>Soy implied bump:</strong>{" "}
-                {soyBumpBu.toFixed(2)} bu/ac
+                <strong>Soy implied bump:</strong> {soyBumpBu.toFixed(2)} bu/ac
+              </div>
+
+              {/* Sensitivity */}
+              <div style={{ marginTop: 20 }}>
+                <h3 style={{ marginBottom: 10 }}>Sensitivity (Yield Lift)</h3>
+
+                <div
+                  style={{
+                    border: "1px solid #e5e7eb",
+                    borderRadius: 12,
+                    overflow: "hidden",
+                    background: "#ffffff",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "1.1fr 1.1fr 1fr",
+                      fontWeight: 700,
+                      padding: 10,
+                      background: "#f9fafb",
+                      borderBottom: "1px solid #e5e7eb",
+                    }}
+                  >
+                    <div>Lift</div>
+                    <div>Annual Benefit</div>
+                    <div>Payback</div>
+                  </div>
+
+                  {sensitivity.map((row, idx) => (
+                    <div
+                      key={row.pct}
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "1.1fr 1.1fr 1fr",
+                        padding: 10,
+                        borderBottom:
+                          idx === sensitivity.length - 1
+                            ? "none"
+                            : "1px solid #f1f5f9",
+                      }}
+                    >
+                      <div>
+                        {row.pct}% (Corn {row.cornBump.toFixed(1)} bu, Soy{" "}
+                        {row.soyBump.toFixed(1)} bu)
+                      </div>
+                      <div>${money(row.benefit)}</div>
+                      <div>
+                        {Number.isFinite(row.payback)
+                          ? `${row.payback.toFixed(2)} yrs`
+                          : "—"}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
+          </div>
+
+          <div style={{ marginTop: 18, fontSize: 12, color: "#6b7280" }}>
+            Note: Payback ignores discounting. This version assumes a fixed 50/50
+            corn/soy rotation.
           </div>
         </div>
       </div>
