@@ -202,40 +202,23 @@ export default function App() {
               <h3>Results</h3>
 
               <div style={{ marginBottom: 18 }}>
-                <div style={{ fontWeight: 700, color: paybackColor }}>
+                <div style={{ fontWeight: 700 }}>
                   Simple Payback
                 </div>
 
                 <div
-                  style={{
-                    display: "flex",
-                    alignItems: "baseline",
-                    gap: 12,
-                    flexWrap: "wrap",
+                   style={{
+                   fontSize: 52,
+                   fontWeight: 900,
+                   color: paybackColor,
+                    marginTop: 6,
                   }}
                 >
-                  <div style={{ fontSize: 44, fontWeight: 800 }}>
-                    {Number.isFinite(paybackYears)
-                      ? `${paybackYears.toFixed(2)} years`
-                      : "—"}
+                  {Number.isFinite(paybackYears)
+                     ? `${paybackYears.toFixed(2)} years`
+                     : "—"}
                   </div>
-
-                  <span
-                    style={{
-                      fontSize: 12,
-                      fontWeight: 800,
-                      padding: "6px 10px",
-                      borderRadius: 999,
-                      background: paybackBand.bg,
-                      color: paybackBand.fg,
-                      lineHeight: 1,
-                    }}
-                    title="≤ 10.0 GREEN; 10.1–15.0 YELLOW; ≥ 15.1 RED"
-                  >
-                    {paybackBand.text}
-                  </span>
-                </div>
-              </div>
+                 </div>
 
               <div style={{ marginBottom: 8 }}>
                 <strong>Total Cost:</strong> ${money(totalCost)}
