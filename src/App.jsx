@@ -63,7 +63,7 @@ export default function App() {
     paybackYears <= 10
       ? "#16a34a"
       : paybackYears <= 15
-        ? "#f59e0b"
+        ? "#f4e803"
         : "#dc2626";
 
   // Sensitivity (Yield Lift) - applies SAME lift % to both crops
@@ -117,7 +117,9 @@ export default function App() {
             marginBottom: 28,
           }}
         >
-          Your land. Your legacy. Our expertise.
+          Your land.
+          Your legacy.
+          Our expertise.
         </div>
 
         {/* Title */}
@@ -154,7 +156,6 @@ export default function App() {
           }}
         >
           <div className="layout-grid">
-          >
             {/* Inputs */}
             <div>
               <h3>Inputs</h3>
