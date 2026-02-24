@@ -147,7 +147,7 @@ export default function App() {
             className="layout-grid"
             style={{
               display: "grid",
-              gridTemplateColumns: "1fr 1fr",
+              gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))",
               gap: 40,
               alignItems: "start",
             }}
@@ -255,7 +255,10 @@ export default function App() {
                       if (window.gtag) window.gtag("event", "call_click", { method: "phone" });
                     }}
                     style={{
-                      display: "inline-block",
+                      display: "block",
+                      width: "100%",
+                      maxWidth: 420,
+                      margin: "0 auto",
                       padding: "14px 28px",
                       backgroundColor: "rgb(247, 236, 32)",
                       color: "#000",
@@ -264,7 +267,6 @@ export default function App() {
                       textDecoration: "none",
                       borderRadius: 8,
                       cursor: "pointer",
-                      minWidth: 320,
                       boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
                       border: "2px solid #000",
                     }}
