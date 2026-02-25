@@ -57,10 +57,19 @@ export default function App() {
     return annualBenefit > 0 ? totalCost / annualBenefit : Infinity;
   }, [totalCost, annualBenefit]);
 
+  const annualROI = useMemo(() => {
+    return totalCost > 0 ? (annualBenefit / totalCost) * 100 : 0;
+  }, [annualBenefit, totalCost]);
+
   // Payback thresholds:
   // <= 10 green; 10.1–15 yellow; 15.1+ red
   const paybackColor =
     paybackYears <= 10 ? "#16a34a" : paybackYears <= 15 ? "#f4e803" : "#dc2626";
+  const roiColor =
+    annualROI >= 15 ? "#166534" :   // strong green
+      annualROI >= 10 ? "#16a34a" :   // healthy green
+        annualROI >= 6 ? "#65a30d" :   // muted green
+          "#dc2626";                      // weak
 
   // Sensitivity (Yield Lift) - applies SAME lift % to both crops
   const sensitivity = useMemo(() => {
@@ -75,8 +84,9 @@ export default function App() {
         acres * rotationSoy * soyBump * soyPrice;
 
       const payback = benefit > 0 ? totalCost / benefit : Infinity;
+      const roi = totalCost > 0 ? (benefit / totalCost) * 100 : 0;
 
-      return { pct, benefit, payback, cornBump, soyBump };
+      return { pct, benefit, payback, roi, cornBump, soyBump };
     });
   }, [acres, cornYield, soyYield, cornPrice, soyPrice, totalCost, rotationCorn, rotationSoy]);
 
@@ -153,79 +163,95 @@ export default function App() {
             }}
           >
             {/* Inputs column */}
-            <div>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
               <h3>Inputs</h3>
 
-              <label>Acres</label>
+              <label style={{ display: "block", marginBottom: 4 }}>
+                Acres
+              </label>
               <input
                 type="number"
                 value={acres}
                 onChange={(e) => setAcres(+e.target.value)}
-                style={{ width: "100%", marginBottom: 12, padding: 8 }}
+                style={{ width: "140px", padding: "6px 8px", marginBottom: 12, borderRadius: 6 }}
               />
 
-              <label>Install Cost per Acre ($)</label>
+              <label style={{ display: "block", marginBottom: 4 }}>
+                Investment per acre
+              </label>
               <input
                 type="number"
                 value={installCostPerAcre}
                 onChange={(e) => setInstallCostPerAcre(+e.target.value)}
-                style={{ width: "100%", marginBottom: 18, padding: 8 }}
+                style={{ width: "140px", padding: "6px 8px", marginBottom: 12, borderRadius: 6 }}
               />
 
               <div style={{ fontWeight: 800, marginBottom: 10 }}>Corn (50%)</div>
 
-              <label>Corn Price ($/bu)</label>
+              <label style={{ display: "block", marginBottom: 4 }}>
+                Acres
+              </label>
               <input
                 type="number"
                 step="0.01"
                 value={cornPrice}
                 onChange={(e) => setCornPrice(+e.target.value)}
-                style={{ width: "100%", marginBottom: 12, padding: 8 }}
+                style={{ width: "140px", padding: "6px 8px", marginBottom: 18, borderRadius: 6 }}
               />
 
-              <label>Corn Base Yield (bu/acre)</label>
+              <label style={{ display: "block", marginBottom: 4 }}>
+                Acres
+              </label>
               <input
                 type="number"
                 value={cornYield}
                 onChange={(e) => setCornYield(+e.target.value)}
-                style={{ width: "100%", marginBottom: 12, padding: 8 }}
+                style={{ width: "140px", padding: "6px 8px", marginBottom: 18, borderRadius: 6 }}
               />
 
-              <label>Corn Yield Bump (%)</label>
+              <label style={{ display: "block", marginBottom: 4 }}>
+                Acres
+              </label>
               <input
                 type="number"
                 step="0.1"
                 value={cornYieldBumpPct}
                 onChange={(e) => setCornYieldBumpPct(+e.target.value)}
-                style={{ width: "100%", marginBottom: 18, padding: 8 }}
+                style={{ width: "140px", padding: "6px 8px", marginBottom: 18, borderRadius: 6 }}
               />
 
               <div style={{ fontWeight: 800, marginBottom: 10 }}>Soybeans (50%)</div>
 
-              <label>Soy Price ($/bu)</label>
+              <label style={{ display: "block", marginBottom: 4 }}>
+                Acres
+              </label>
               <input
                 type="number"
                 step="0.01"
                 value={soyPrice}
                 onChange={(e) => setSoyPrice(+e.target.value)}
-                style={{ width: "100%", marginBottom: 12, padding: 8 }}
+                style={{ width: "140px", padding: "6px 8px", marginBottom: 18, borderRadius: 6 }}
               />
 
-              <label>Soy Base Yield (bu/acre)</label>
+              <label style={{ display: "block", marginBottom: 4 }}>
+                Acres
+              </label>
               <input
                 type="number"
                 value={soyYield}
                 onChange={(e) => setSoyYield(+e.target.value)}
-                style={{ width: "100%", marginBottom: 12, padding: 8 }}
+                style={{ width: "140px", padding: "6px 8px", marginBottom: 18, borderRadius: 6 }}
               />
 
-              <label>Soy Yield Bump (%)</label>
+              <label style={{ display: "block", marginBottom: 4 }}>
+                Acres
+              </label>
               <input
                 type="number"
                 step="0.1"
                 value={soyYieldBumpPct}
                 onChange={(e) => setSoyYieldBumpPct(+e.target.value)}
-                style={{ width: "100%", padding: 8 }}
+                style={{ width: "140px", padding: "6px 8px", marginBottom: 18, borderRadius: 6 }}
               />
             </div>
 
@@ -236,14 +262,20 @@ export default function App() {
               {/* Payback */}
               <div
                 style={{
-                  fontSize: 52,
                   fontWeight: 900,
-                  color: paybackColor,
+                  color: roiColor,
                   marginTop: 6,
-                  WebkitTextStroke: "1.5px #000000",
+                  whiteSpace: "nowrap",
                 }}
               >
-                {Number.isFinite(paybackYears) ? `${paybackYears.toFixed(2)} years` : "—"}
+                <span style={{ fontSize: 52 }}>
+                  {Number.isFinite(annualROI)
+                    ? `${annualROI.toFixed(2)}%`
+                    : "—"}
+                </span>{" "}
+                <span style={{ fontSize: 28 }}>
+                  Annual Return
+                </span>
               </div>
 
               {/* CTA + summary */}
@@ -261,14 +293,14 @@ export default function App() {
                       margin: "0 auto",
                       padding: "14px 28px",
                       backgroundColor: "rgb(247, 236, 32)",
-                      color: "#000",
+                      color: "#000000",
                       fontWeight: 700,
                       fontSize: 18,
                       textDecoration: "none",
                       borderRadius: 8,
                       cursor: "pointer",
-                      boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-                      border: "2px solid #000",
+                      boxShadow: "0 4px 12px rgb(194, 194, 194)",
+                      border: "2px solid #838383",
                     }}
                   >
                     Talk Through Your Farm&apos;s Numbers
@@ -276,11 +308,11 @@ export default function App() {
                 </div>
 
                 <div style={{ marginBottom: 8 }}>
-                  <strong>Total Cost:</strong> ${money(totalCost)}
+                  <strong>Investment:</strong> ${money(totalCost)}
                 </div>
 
                 <div style={{ marginBottom: 8 }}>
-                  <strong>Annual Benefit (50/50):</strong> ${money(annualBenefit)}
+                  <strong>Annual Benefit:</strong> ${money(annualBenefit)}
                 </div>
 
                 <div style={{ marginBottom: 14 }}>
@@ -288,17 +320,17 @@ export default function App() {
                 </div>
 
                 <div style={{ marginBottom: 6 }}>
-                  <strong>Corn implied bump:</strong> {cornBumpBu.toFixed(2)} bu/ac
+                  <strong>Corn yield increase:</strong> {cornBumpBu.toFixed(2)} bu/ac
                 </div>
 
                 <div style={{ marginBottom: 18 }}>
-                  <strong>Soy implied bump:</strong> {soyBumpBu.toFixed(2)} bu/ac
+                  <strong>Soybean yield increase:</strong> {soyBumpBu.toFixed(2)} bu/ac
                 </div>
               </div>
 
               {/* Sensitivity */}
               <div style={{ marginTop: 20 }}>
-                <h3 style={{ marginBottom: 10 }}>Sensitivity (Yield Lift)</h3>
+                <h3 style={{ marginBottom: 10 }}>Investment Scenario Analysis</h3>
 
                 <div
                   style={{
@@ -318,7 +350,7 @@ export default function App() {
                       borderBottom: "1px solid #e5e7eb",
                     }}
                   >
-                    <div>Lift</div>
+                    <div>Yield Increase</div>
                     <div>Annual Benefit</div>
                     <div>Payback</div>
                   </div>
@@ -328,19 +360,28 @@ export default function App() {
                       key={row.pct}
                       style={{
                         display: "grid",
-                        gridTemplateColumns: "1.1fr 1.1fr 1fr",
+                        gridTemplateColumns: "1.3fr 1.1fr 1fr",
                         padding: 10,
-                        borderBottom:
-                          idx === sensitivity.length - 1 ? "none" : "1px solid #f1f5f9",
+                        borderBottom: idx === sensitivity.length - 1 ? "none" : "1px solid #f1f5f9",
                       }}
                     >
+                      {/* Yield Increase column */}
                       <div>
-                        {row.pct}% (Corn {row.cornBump.toFixed(1)} bu, Soy{" "}
-                        {row.soyBump.toFixed(1)} bu)
+                        <div style={{ fontWeight: 800 }}>{row.pct}%</div>
+                        <div style={{ fontSize: 12, color: "#6b7280" }}>
+                          Corn +{row.cornBump.toFixed(1)} bu • Soy +{row.soyBump.toFixed(1)} bu
+                        </div>
                       </div>
+
+                      {/* Annual Benefit column */}
                       <div>${money(row.benefit)}</div>
+
+                      {/* Payback + Annual Return column */}
                       <div>
-                        {Number.isFinite(row.payback) ? `${row.payback.toFixed(2)} yrs` : "—"}
+                        <div>{Number.isFinite(row.payback) ? `${row.payback.toFixed(2)} yrs` : "—"}</div>
+                        <div style={{ fontSize: 12, color: "#6b7280" }}>
+                          {Number.isFinite(row.roi) ? `${row.roi.toFixed(2)}% annual` : "—"}
+                        </div>
                       </div>
                     </div>
                   ))}
